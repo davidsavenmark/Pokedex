@@ -1,33 +1,31 @@
 import Layout from "../components/Layout";
 import  React, {useState, useEffect, useContext} from "react";
+import { FavoriteProvider } from "../contexts/favoritesContext";
+import FavoriteContext from "../contexts/favoritesContext";
 import Link from 'next/link'
-import usePokemonStore from "../store/store";
 
-
-
-
+const favoritesKey = "f"
 export default function Home({styles, pokeData}) {
   const [searchResults, setSearchResults] = useState(pokeData)
   const [pokeArray, setPokeArray] = useState(searchResults.slice(0,20))
   const [pageNumber, setPageNumber] = useState(0)
   const [input, setInput] = useState("")
   const [filter, setFilter] = useState("All")
-  
-  const addToStore = usePokemonStore((state) => state.addToStore);
-  const updateStore = usePokemonStore((state) => state.updateStore);
-  const myPokemonStore = usePokemonStore((state) => state.pokemonContent);
-
-
+  const [favorites, setFavorites] = useState(pokeArray);
+  const {favoritePokemons, updateFavoritePokemons} = useContext(FavoriteContext)
 
 
 
   useEffect(() => {
     setPokeArray(searchResults.slice(pageNumber * 20, (pageNumber*20)+20))
   }, [pageNumber])
+
+
   useEffect(() => {
     setPokeArray(searchResults.slice(0,20))
   }, [searchResults])
   
+
   useEffect(() => {
   if(input.length ===0 && filter === "All"){
     setSearchResults(pokeData)
@@ -53,19 +51,7 @@ export default function Home({styles, pokeData}) {
     return 
   }
   }, [input,filter])
-
-
-  const addPokemon = (params) => {
-    const pokemon = myPokemonStore.findIndex((item) => item.id === params.id);
-    if (pokemon !== -1) {
-      myPokemonStore[pokemon].quantity++;
-      updateStore({ params, myPokemonStore });
-    } else {
-      addToStore(params);
-    }
-  };
-  
-  
+ 
   const handlePrev=()=>{
     setPageNumber(c=> {return c-1})
   }
@@ -81,30 +67,40 @@ export default function Home({styles, pokeData}) {
     setFilter(e.target.value)
   }
 
-  // const updateFavoritePokemons = (name) =>{
-  //   const updatedFavorites = [...favorites]
-  //   const favoriteIndex = favorites.indexOf(name)
-  //   if(favoriteIndex >= 0){
-  //     updatedFavorites.slice(favoriteIndex, 1);
+  const loadFavoritePokemons = () => {
+    const pokemons = JSON.parse(window.localStorage.getItem(favoritesKey)) || []
+    setFavorites(pokemons)
+  }
+
+  useEffect(() => {
+    loadFavoritePokemons()
+  }, []);
+
+  const updateFavoritePokemans = (pokeman, id) =>{
+    const updatedFavorites = [...favorites]
+    const favoriteIndex = favorites.indexOf(pokeman.id)
+    if(favoriteIndex >= 0){
+      updatedFavorites.slice(favoriteIndex, 1);
       
-  //   }else{
-  //     updatedFavorites.push(name);
-  //   }
-  //   setFavorites(updatedFavorites);
-  // }
+    }else{
+      updatedFavorites.push(pokeman.id);
+    }
+    setFavorites(updatedFavorites);
+  }
   
-  // const onPokeballClick = () => {
-
+ 
+  const onPokeballClick = () => {
+   
+    console.log("add to favorites")
+    updateFavoritePokemons(pokeArray.pokeman)
+  }
   
-  //   const pokemon = pokeData
-    
-  //   //console.log("add to favorites")
-
-  //   updateFavoritePokes(pokemon)
-  // }
   
   return (
- 
+    <FavoriteProvider value={{
+      favoritePokemons: favorites,
+      updateFavoritePokemons: updateFavoritePokemans,
+    }}>
   <Layout title={"PokeDéx"}>
    
     <div className="flex justify-center pt-12">
@@ -145,26 +141,29 @@ export default function Home({styles, pokeData}) {
         pokeArray.map((pokeman,i) =>{
           return(
             <div key={pokeman.name.english} className="p-4">
+
+              <button onClick={()=>{
+                  onPokeballClick({
+                  })
+                }}>
+
+              <img src="../images/pokemonball.png" 
+                   alt="" 
+                   className='mr-5 h-[32px] w-[32px]  pt-3 hover:scale-x-125 scale-y-140 cursor-pointer'
+             />
+             
+              </button>
+             
               <Link href={`/pokemons/${pokeman.id}`}><a>
                 
               <div className="bg-slate-300 py-4 px-6 rounded-lg  ">
-                <img src="../images/pokemonball.png" 
-                   alt="" 
-                   className='mr-5 h-[32px] w-[32px]  pt-3 hover:scale-x-125 scale-y-140 cursor-pointer'
-                onClick={()=>{
-                  addPokemon({
-
-                  })
-                }}/>
+                
              
                 <img 
                 src={pokeman.image.hires} 
                 alt="" 
                 className=" h-[150px] w-[150px] sm:h-[200px] sm:w-[200px] my-6"
                 />
-
-                
-
                 <div className="text-center">
                   { pokeman.type.map((type, j)=>{
                     return(
@@ -208,6 +207,7 @@ export default function Home({styles, pokeData}) {
 
     </div>
   </Layout>
+  </FavoriteProvider>
 
   );
 }

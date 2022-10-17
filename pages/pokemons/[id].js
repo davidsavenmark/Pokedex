@@ -2,9 +2,7 @@ import React, {useContext} from 'react'
 import Layout from '../../components/Layout'
 
 const Details = ({pokeman, styles}) => {
-    
-    
-   
+     
     //console.log(pokeman)
     return(
         <Layout title={pokeman.name.english}>
@@ -13,23 +11,20 @@ const Details = ({pokeman, styles}) => {
                     <img src={pokeman.image.hires} alt=""></img>
                 </div>
 
-
                 <img src="../images/pokemonball.png" 
                    alt="" 
                    className='mr-5 h-[32px] w-[32px]  pt-3 hover:scale-x-125 scale-y-140 cursor-pointer'
                 />
 
                 <div className='flex-1'>
-                    <p className='text-4xl font-semibold'>
-                    
+                    <p className='text-4xl font-semibold'>                 
                         <span className='mr-4'>#{pokeman.id}</span>
                         <span>{pokeman.name.english}</span>
                     </p>
                     <p>
                         <span className='text-sm'>{pokeman.name.chinese}</span>
                         <span className='text-sm'>{pokeman.name.japansese}</span>
-                        <span className='text-sm'>{pokeman.name.french}</span>
-                       
+                        <span className='text-sm'>{pokeman.name.french}</span>                       
                     </p>
                     <p>
                         <span>Species:&nbsp;</span>
@@ -61,7 +56,6 @@ const Details = ({pokeman, styles}) => {
 
                                 let statPercentFactor = 0
                                 let statColor = ''
-                           
 
                                 switch(stat){
                                     case "HP":
@@ -87,9 +81,9 @@ const Details = ({pokeman, styles}) => {
                                     case "Speed":
                                         statPercentFactor = 2.0;
                                         statColor = "#f75887";
-                                        break;
-                                                        
+                                        break;                       
                                 }
+
                                return(
                                 <div key={stat}>
                                     <div className='flex justify-between'>
