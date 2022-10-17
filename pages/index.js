@@ -76,14 +76,14 @@ export default function Home({styles, pokeData}) {
     loadFavoritePokemons()
   }, []);
 
-  const updateFavoritePokemans = (pokeman, id) =>{
+  const updateFavoritePokemans = (name) =>{
     const updatedFavorites = [...favorites]
-    const favoriteIndex = favorites.indexOf(pokeman.id)
+    const favoriteIndex = favorites.indexOf(name)
     if(favoriteIndex >= 0){
       updatedFavorites.slice(favoriteIndex, 1);
       
     }else{
-      updatedFavorites.push(pokeman.id);
+      updatedFavorites.push(name);
     }
     setFavorites(updatedFavorites);
   }
@@ -92,7 +92,7 @@ export default function Home({styles, pokeData}) {
   const onPokeballClick = () => {
    
     console.log("add to favorites")
-    updateFavoritePokemons(pokeArray.pokeman)
+    updateFavoritePokemons(pokeman.name)
   }
   
   
